@@ -1,0 +1,14 @@
+.table-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    width: 80%;
+    padding: 20px;
+}
+
+.table-container table {
+    width: calc(20% - 10px);
+    border: 1px solid #000000;
+    text-align: center;
+}
