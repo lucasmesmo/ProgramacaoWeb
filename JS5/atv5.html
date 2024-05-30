@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gráfico de Barras</title>
+    <script type="text/javascript" src="atv5.js"></script>
+    <link rel="stylesheet" href="atv5.css">
+</head>
+<body>
+    <h1>Um Gráfico de Barras</h1>
+    <form id="formulario">
+        <label for="valor1">Informe as alturas das barras:</label>
+        <input type="number" id="valor1" name="valor1" required>
+        <label for="valor2"></label>
+        <input type="number" id="valor2" name="valor2" required>
+        <label for="valor3"></label>
+        <input type="number" id="valor3" name="valor3" required>
+        <label for="valor4"></label>
+        <input type="number" id="valor4" name="valor4" required>
+        <label for="valor5"></label>
+        <input type="number" id="valor5" name="valor5" required>
+        <br>
+        <label for="largura">Informe a largura das Barras:</label>
+        <input type="number" id="largura" name="largura" required>
+        <br><br>
+        <button type="button" onclick="gerarGrafico()">Desenhar o gráfico</button>
+    </form>
+    <div id="grafico"></div>
+
+</body>
+</html>
