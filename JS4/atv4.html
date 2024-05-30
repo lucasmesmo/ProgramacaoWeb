@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Calculadora de Área e Diâmetro do Círculo</title>
+    <script type="text/javascript" src="atv4.js"></script>
+</head>
+<body>
+    <h1>Calculadora de Área e Circunferência do Círculo</h1>
+    <form onsubmit="event.preventDefault(); calcularCirculo();">
+        <label for="raio">Informe o raio</label>
+        <input type="number" id="raio" name="raio" step="0.01" required>
+        <button type="submit">OK</button>
+        <br><br>
+        <label for="area">Área do Círculo</label>
+        <input type="text" id="area" name="area" readonly>
+        <br><br>
+        <label for="circunferencia">Circunferência</label>
+        <input type="text" id="circunferencia" name="circunferencia" readonly>
+        <br><br>
+    </form>
+</body>
+</html>
