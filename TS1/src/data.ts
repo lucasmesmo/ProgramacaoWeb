@@ -1,0 +1,1 @@
+export const nomeCurso: string = "Programação Web IComp/UFAM";
