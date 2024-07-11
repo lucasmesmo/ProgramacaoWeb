@@ -2,11 +2,11 @@
     let FPS = 10
     const SIZE = 40
 
+    let points = 0;
+
     let board;
     let snake;
     let fruit;
-
-    let points = 0;
 
     let game_running = false;
     let game_interval;
