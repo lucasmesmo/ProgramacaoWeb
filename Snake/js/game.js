@@ -1,7 +1,9 @@
+// Aluno: Lucas de Oliveira darcio
+// Matrícula: 22153138
+
 (function () {
     let FPS = 10
     const SIZE = 40
-
     let points = 0;
 
     let board;
@@ -12,19 +14,27 @@
     let game_interval;
     let speed_interval;
 
+    let last_speed_increase_time;
+    let time_since_last_speed_increase = 0;
+    const SPEED_INCREASE_INTERVAL = 60000;
+
     function init() {
         if (board) {
             board.clear();
         }
         board = new Board(SIZE);
-        snake = new Snake([[4, 4], [4, 5], [4, 6]])
+        snake = new Snake([[4, 4], [4, 5], [4, 6]]);
+        placeFruit();
     }
 
     function startGame() {
         if(!game_running) {
             game_running = true;
-            game_interval = setInterval(run, 1000 / FPS)
-            speed_interval = setInterval(increaseSpeed, 60000);
+            game_interval = setInterval(run, 1000 / FPS);
+            startSpeedTimeout(SPEED_INCREASE_INTERVAL - time_since_last_speed_increase);
+            document.getElementById("game-over").style.display = "none";
+            points = 0;
+            updatePoints();
         }
     }
 
@@ -38,16 +48,22 @@
 
     function pauseGame() {
         if (game_running) {
-            stopGame();
+            clearInterval(game_interval);
+            clearTimeout(speed_timeout);
+            game_running = false;
+            time_since_last_speed_increase = Date.now() - last_speed_increase_time;
         } else {
-            startGame();
+            game_running = true;
+            game_interval = setInterval(run, 1000 / FPS);
+            startSpeedTimeout(SPEED_INCREASE_INTERVAL - time_since_last_speed_increase);
         }
     }
 
     function resetGame() {
         stopGame();
         FPS = 10;
-        points = 0;
+        time_since_last_speed_increase = 0;
+        document.getElementById("game-over").style.display = "block";
         init();
     }
 
@@ -56,14 +72,31 @@
         if (game_running) {
             clearInterval(game_interval);
             game_interval = setInterval(run, 1000 / FPS);
+            startSpeedTimeout(SPEED_INCREASE_INTERVAL);
         }
     }
 
-     // As frutas possuem 2x mais chances de ter pretos do que vermelhos
-    function createFruit() {
-        let fruitColor = Math.random() < 0.67 ? "#000" : "#f00";
-        let position = generateRandomPosition();
-        fruit = new Fruit(position, fruitColor);
+    function startSpeedTimeout(interval) {
+        last_speed_increase_time = Date.now();
+        speed_timeout = setTimeout(increaseSpeed, interval);
+    }
+     
+     function placeFruit() {
+        let x, y, cell;
+        do {
+            x = Math.floor(Math.random() * SIZE) + 1;
+            y = Math.floor(Math.random() * SIZE) + 1;
+            cell = document.querySelector(`#board tr:nth-child(${x}) td:nth-child(${y})`);
+        } while (cell.style.backgroundColor === snake.color);
+
+        // As frutas possuem 2x mais chances de ter pretos do que vermelhos
+        const isRedFruit = Math.random() < 1 / 3;
+        cell.style.backgroundColor = isRedFruit ? "red" : "black";
+        fruit = { x, y, isRedFruit };
+    }
+
+    function updatePoints() {
+        document.getElementById("points").textContent = points.toString().padStart(4, '0');
     }
 
     window.addEventListener("keydown", (e) => {
@@ -89,7 +122,7 @@
             default:
                 break;
         }
-    })
+    });
 
     class Board {
         constructor(size) {
@@ -115,7 +148,7 @@
     class Snake {
         constructor(body) {
             this.body = body;
-            this.color = "#222";
+            this.color = "darkgreen";
             this.direction = 1; // 0 para cima, 1 para direita, 2 para baixo, 3 para esquerda
             this.body.forEach(field => document.querySelector(`#board tr:nth-child(${field[0]}) td:nth-child(${field[1]})`).style.backgroundColor = this.color)
         }
@@ -153,11 +186,32 @@
                 }
             }
 
-            this.body.push(newHead)
-            const oldTail = this.body.shift()
-            document.querySelector(`#board tr:nth-child(${newHead[0]}) td:nth-child(${newHead[1]})`).style.backgroundColor = this.color
-            document.querySelector(`#board tr:nth-child(${oldTail[0]}) td:nth-child(${oldTail[1]})`).style.backgroundColor = board.color
+
+            // Esse trecho verifica se a cobra comeu uma fruta
+            if (newHead[0] === fruit.x && newHead[1] === fruit.y) {
+                // Cobra come a fruta
+                if (fruit.isRedFruit) {
+                    points += 2;
+                } else {
+                    points += 1;
+                }
+
+                updatePoints();
+                placeFruit();
+            } else {
+                const oldTail = this.body.shift();
+                document.querySelector(`#board tr:nth-child(${oldTail[0]}) td:nth-child(${oldTail[1]})`).style.backgroundColor = board.color;
+            }
+
+
+            this.body.push(newHead);
+            document.querySelector(`#board tr:nth-child(${newHead[0]}) td:nth-child(${newHead[1]})`).style.backgroundColor = this.color;
         }
+            //this.body.push(newHead)
+            //const oldTail = this.body.shift()
+            //document.querySelector(`#board tr:nth-child(${newHead[0]}) td:nth-child(${newHead[1]})`).style.backgroundColor = this.color
+            //document.querySelector(`#board tr:nth-child(${oldTail[0]}) td:nth-child(${oldTail[1]})`).style.backgroundColor = board.color
+
         changeDirection(newDirection) {
 
             // Aqui a ideia é verificar se a cobra fez um movimento de 180 graus
@@ -173,5 +227,27 @@
     function run() {
         snake.walk()
     }
+
+    function createUI() {
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.justifyContent = 'space-between';
+        container.style.marginBottom = '20px';
+
+        const pointsDisplay = document.createElement('h1');
+        pointsDisplay.setAttribute('id', 'points');
+        pointsDisplay.textContent = '0000';
+        container.appendChild(pointsDisplay);
+
+        const gameOverMessage = document.createElement('h1');
+        gameOverMessage.setAttribute('id', 'game-over');
+        gameOverMessage.textContent = 'GAME OVER! :(';
+        gameOverMessage.style.display = 'none';
+        container.appendChild(gameOverMessage);
+
+        document.body.insertBefore(container, document.body.firstChild);
+    }
+
+    createUI();
     init()
 })()
