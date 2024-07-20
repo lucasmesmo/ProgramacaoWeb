@@ -62,20 +62,55 @@ process.argv.forEach((val, index) => {
 
 const http = require('http');
 const fs = require('fs').promises;
+const dotenv = require("dotenv");
+const strHelper = require('./str_helper');
 
-require('dotenv').config();
+
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+
+let icomp = "Instituto de Computação";
+console.log(strHelper.upper(icomp));
+console.log(strHelper.lower(icomp));
 
 const PORT = process.env.PORT ?? 8080;
 const server = http.createServer(async function (req, res) {
-    res.writeHead(200,{"Content-Type":"text/html;charset=utf-8"});
-    const directoryPath = process.argv[2]; // /home/lucasdarcio
+    //res.writeHead(200,{"Content-Type":"text/html;charset=utf-8"});
+    
+    const directoryPath = process.argv[2]; // /home/lucasdarcio/home/usuario/projetos/pw/ProgramacaoWeb/node1
+    
     try{
-        const files = await fs.readdir(directoryPath);
-        for (const file of files){
-            res.write(file+"<br>");
-            console.log(file);
+
+        if(req.url == '/'){
+            const files = await fs.readdir(directoryPath);
+            res.writeHead(200,{"Content-Type":"text/html;charset=utf-8"});
+            for (const file of files){
+                res.write(strHelper.createLink(file));
+                console.log(file);
+            }
+            res.end();
         }
-        res.end();
+        else{
+            if (req.url === '/favicon.ico') {
+                res.writeHead(204); // Sem conteúdo para favicon
+                res.end();
+                return;
+            }
+            const filePath = directoryPath+req.url;
+            console.log("paaaath:"+filePath);
+            try {
+                const data = await fs.readFile(filePath, 'utf8');
+                res.writeHead(200, {"Content-Type": "text/html;charset=utf-8"});
+                res.write(`<a href="/">Voltar</a><br>\n`);
+                res.write('<pre>'+data+'</pre>');
+                res.end();
+            } 
+            catch (err) {
+                console.error(`Error reading file: ${err.message}`);
+                res.writeHead(404, {"Content-Type": "text/html;charset=utf-8"});
+                res.write("File not found");
+                res.end();
+            }
+        }
     }
     catch(err) {
         console.error(`Error reading directory: ${err.message}`);
