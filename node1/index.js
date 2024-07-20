@@ -61,13 +61,13 @@ process.argv.forEach((val, index) => {
 */
 
 const http = require('http');
-const fs = require('fs').promises; //Eu só consegui fazer funcionar usando promisses, acho que porque eu uso wsl
+const fs = require('fs').promises;
 
+require('dotenv').config();
 
-const server = http.createServer(async function(req,res){
+const PORT = process.env.PORT ?? 8080;
+const server = http.createServer(async function (req, res) {
     res.writeHead(200,{"Content-Type":"text/html;charset=utf-8"});
-    //console.log(typeof(process.argv[2]));
-
     const directoryPath = process.argv[2]; // /home/lucasdarcio
     try{
         const files = await fs.readdir(directoryPath);
@@ -82,6 +82,4 @@ const server = http.createServer(async function(req,res){
         res.end();
     }
 });
-
-server.listen(3333);
-
+server.listen(PORT);
