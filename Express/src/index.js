@@ -1,3 +1,13 @@
+/*
+
+instalando type script
+~ npm i -D typescript @types/express @types/node ts-node
+
+iniciando configs de ts
+~ npx tsc --init
+
+*/
+
 const express = require("express");
 require("dotenv").config();
 

@@ -1,3 +1,14 @@
+
+/*
+
+instalando type script
+~ npm i -D typescript @types/express @types/node ts-node
+
+iniciando configs de ts
+~ npx tsc --init
+
+*/
+
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 
