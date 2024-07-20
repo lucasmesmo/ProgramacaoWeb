@@ -41,11 +41,12 @@ Alguns módulos embarcados do Node.js: http, url, path, fs, os, sys, tty, cluste
 req – objeto representando a requisição do usuário.
 res – objeto representando a resposta enviada para o usuário.
 
+Mostra os processos em portas?
+~ sudo lsof -i -P -n | grep LISTEN
 
 fs.rename('imagem.jpeg', 'rascunho.jpeg', function (err) {
     if (err) throw new Error(err);
 });
-*/
 
 const http = require('http');
 const fs = require('fs').promises; //Eu só consegui fazer funcionar usando promisses, acho que porque eu uso wsl
@@ -56,6 +57,11 @@ console.log("Instituto de Computacão")
 process.argv.forEach((val, index) => {
     console.log(`${index}: ${val}`)
 })
+
+*/
+
+const http = require('http');
+const fs = require('fs').promises; //Eu só consegui fazer funcionar usando promisses, acho que porque eu uso wsl
 
 
 const server = http.createServer(async function(req,res){
