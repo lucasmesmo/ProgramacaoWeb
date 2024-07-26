@@ -6,13 +6,26 @@ import path from 'path';
 
 import router from '../router/router';
 
+import { engine } from 'express-handlebars';
+
 dotenv.config();
 const PORT = process.env.PORT ?? 3333;
 const LOG_DIR = process.env.LOG ?? './logs';
+//const __dirname = process.env.EXPTS_DIR ?? './';
+
+//console.log(__dirname+'/views');
+
 const app = express();
-
-
 app.use(router);
+
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", `${__dirname}/views`);
+//app.set("views", path.resolve(__dirname, '/views'));
+
+app.engine("handlebars", engine({
+    helpers: require(`${__dirname}/views/helpers/helpers.ts`)
+}));
 
 if (!fs.existsSync(LOG_DIR)) {
     console.log("NÃO EXISTE DIRETÓRIO ESPECIFICADO, CRIANDO...\n");
