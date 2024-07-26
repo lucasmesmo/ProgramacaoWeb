@@ -11,7 +11,7 @@
   },
   "include": [
     "src/**/*",
-    "router/**/*"
+    "src/router/**/*"
   ],
   "exclude": ["node_modules"]
 }

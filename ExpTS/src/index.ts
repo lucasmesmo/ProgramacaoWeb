@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 
-import router from '../router/router';
+import router from './router/router';
 
 import { engine } from 'express-handlebars';
 
