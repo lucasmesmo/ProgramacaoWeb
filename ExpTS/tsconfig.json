@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "build",
-    "target": "es2016",
+    "target": "es2020",
     "module": "commonjs",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -13,5 +13,5 @@
     "src/**/*",
     "src/router/**/*"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules, build"]
 }

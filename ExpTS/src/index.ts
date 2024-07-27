@@ -2,54 +2,47 @@ import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import path from 'path';
-
-import router from './router/router';
-
 import { engine } from 'express-handlebars';
 
-dotenv.config();
-const PORT = process.env.PORT ?? 3333;
-const LOG_DIR = process.env.LOG ?? './logs';
-//const __dirname = process.env.EXPTS_DIR ?? './';
+import router from './router/router';
+import logger from './middlewares/logger'
 
-//console.log(__dirname+'/views');
+dotenv.config();
 
 const app = express();
-app.use(router);
+const PORT = process.env.PORT ?? 3333;
 
-app.engine("handlebars", engine());
+
+app.engine("handlebars", engine({ helpers: require(`${__dirname}/views/helpers/helpers.ts`)}));
 app.set("view engine", "handlebars");
 app.set("views", `${__dirname}/views`);
-//app.set("views", path.resolve(__dirname, '/views'));
 
-app.engine("handlebars", engine({
-    helpers: require(`${__dirname}/views/helpers/helpers.ts`)
-}));
-
+//exercicio 3
+/*
 if (!fs.existsSync(LOG_DIR)) {
     console.log("NÃO EXISTE DIRETÓRIO ESPECIFICADO, CRIANDO...\n");
     fs.mkdirSync(LOG_DIR);
 }
+*/
+app.use(logger(1));
 
-const logMiddleware = (form: 0 | 1) => (req: Request, res: Response, next: NextFunction) => {
-    const logSimple = `${new Date().toISOString() + " " + req.url + " " + req.method}\n`;
-    const logComplete = `${new Date().toISOString() + " " +req.url+ " " + req.method+ " " + req.httpVersion+ " " + req.get('User-Agent')}\n`;
-    const logFile = form === 0 ? 'logs_simples.txt' : 'logs_completos.txt';
-    const logData = form === 0 ? logSimple : logComplete;
+app.locals.valor = "10";
+app.use(express.urlencoded({ extended: false }));
+app.use(router);
 
-    const logFilePath = path.join(LOG_DIR, logFile);
+const publicPath = `${process.cwd()}`;
 
-    fs.appendFile(logFilePath, logData, (err) => {
-        if (err) {
-            console.error('Error ao escrever log:', err);
-        }
-    });
+app.use('/inf', (req, res) => {
+    res.send(publicPath);
+})
 
-    next();
-};
+app.use('/css', express.static(`${publicPath}/public/css`));
+app.use('/js', express.static(`${publicPath}/public/js`));
+app.use('/img', express.static(`${publicPath}/public/img`));
 
-app.use(logMiddleware(1));
+app.engine("handlebars", engine({
+    helpers: require(`${__dirname}/views/helpers/helpers.ts`)
+}));
 
 app.use(morgan('short'));
 
